@@ -144,7 +144,9 @@ class ByteBufferTests {
     @Test
     void deveArmazenarBytesCorretamenteNoArray() {
         ByteBuffer buffer = ByteBuffer.allocate(10);
-        buffer.put((byte) 1).put((byte) 2);
+        buffer
+        	.put((byte) 1)
+        	.put((byte) 2);
         buffer.flip();
         byte[] dst = new byte[2];
         buffer.get(dst);
@@ -155,7 +157,10 @@ class ByteBufferTests {
     @Test
     void deveLerBytesComOffsetEComprimentoCorretos() {
         ByteBuffer buffer = ByteBuffer.allocate(10);
-        buffer.put((byte) 1).put((byte) 2).put((byte) 3);
+        buffer
+        	.put((byte) 1)
+        	.put((byte) 2)
+        	.put((byte) 3);
         buffer.flip();
         
         byte[] dst = new byte[5];
@@ -167,18 +172,141 @@ class ByteBufferTests {
     // get(int index)
     @Test
     void deveLerByteCorretamenteNoIndiceEspecificado() {
-    	ByteBuffer buffer = ByteBuffer.allocate(10);
-    	buffer.put((byte) 1).put((byte) 2).put((byte) 3);
+    	ByteBuffer buffer = ByteBuffer.allocate(3);
+    	buffer
+    		.put((byte) 1)
+    		.put((byte) 2)
+    		.put((byte) 3);
+    	
     	buffer.flip();
+    	assertEquals(1, buffer.get(0));
     	assertEquals(2, buffer.get(1));
+    	assertEquals(3, buffer.get(2));
     }
     
     // getChar()
     @Test
     void deveLerCharCorretamente() {
-    	ByteBuffer buffer = ByteBuffer.allocate(10);
+    	ByteBuffer buffer = ByteBuffer.allocate(2);
     	buffer.putChar('A');
     	buffer.flip();
     	assertEquals('A', buffer.getChar());
+    }
+    
+    // getChar(int index)
+    @Test
+    void deveLerCharCorretamenteNoIndiceEspecificado() {
+    	ByteBuffer buffer = ByteBuffer.allocate(4);
+    	buffer
+    		.putChar('A')
+    		.putChar('B');
+    	buffer.flip();
+    	assertEquals('A', buffer.getChar(0));
+    	assertEquals('B', buffer.getChar(2));
+    }
+    
+    // getDouble()
+    @Test
+    void deveLerDoubleCorretamente() {
+    	ByteBuffer buffer = ByteBuffer.allocate(8);
+    	buffer.putDouble(1.0);
+    	buffer.flip();
+    	assertEquals(1.0, buffer.getDouble());
+    }
+    
+    // getDouble(int index)
+    @Test
+    void deveLerDoubleCorretamenteNoIndiceEspecificado() {
+    	ByteBuffer buffer = ByteBuffer.allocate(16);
+        buffer
+        	.putDouble(1.5)
+        	.putDouble(2.5);
+        buffer.flip();
+        assertEquals(1.5, buffer.getDouble(0));
+        assertEquals(2.5, buffer.getDouble(8));
+    }
+    
+    // getFloat()
+    @Test
+    void deveLerFloatCorretamente() {
+    	ByteBuffer buffer = ByteBuffer.allocate(4);
+    	buffer.putFloat(1.5F);
+    	buffer.flip();
+    	assertEquals(1.5F, buffer.getFloat(0));
+    }
+    
+    // getFloat(int index)
+    @Test
+    void deveLerFloatCorretamenteNoIndiceEspecificado() {
+    	ByteBuffer buffer = ByteBuffer.allocate(8);
+        buffer
+        	.putFloat(1.5F)
+        	.putFloat(2.5F);
+        buffer.flip();
+        assertEquals(1.5F, buffer.getFloat(0));
+        assertEquals(2.5F, buffer.getFloat(4));
+    }
+    
+    // getInt()
+    @Test
+    void deveLerIntCorretamente() {
+    	ByteBuffer buffer = ByteBuffer.allocate(4);
+    	buffer.putInt(1);
+    	buffer.flip();
+    	assertEquals(1, buffer.getInt());
+    }
+    
+    // getInt(int index)
+    @Test
+    void deveLerIntCorretamenteNoIndiceEspecificado() {
+    	ByteBuffer buffer = ByteBuffer.allocate(8);
+    	buffer
+    		.putInt(1)
+    		.putInt(2);
+    	buffer.flip();
+    	assertEquals(1, buffer.getInt(0));
+    	assertEquals(2, buffer.getInt(4));
+    }
+    
+    // getLong()
+    @Test
+    void deveLerLongCorretamente() {
+    	ByteBuffer buffer = ByteBuffer.allocate(8);
+    	buffer.putLong(1L);
+    	buffer.flip();
+    	assertEquals(1L, buffer.getLong());
+    }
+    
+    // getLong(int index)
+    @Test
+    void deveLerLongCorretamenteNoIndiceEspecificado() {
+    	ByteBuffer buffer = ByteBuffer.allocate(16);
+    	buffer
+    		.putLong(1L)
+    		.putLong(2L);
+    	buffer.flip();
+    	assertEquals(1L, buffer.getLong(0));
+    	assertEquals(2L, buffer.getLong(8));
+    }
+    
+    // getShort()
+    @Test
+    void deveLerShortCorretamente() {
+    	ByteBuffer buffer = ByteBuffer.allocate(2);
+    	buffer.putShort((short) 1);
+    	buffer.flip();
+    	assertEquals(1, buffer.getShort());
+    }
+    
+    // getShort(int index)
+    @Test
+    void deveLerShortCorretamenteNoIndiceEspecificado() {
+    	ByteBuffer buffer = ByteBuffer.allocate(4);
+    	buffer
+    		.putShort((short) 1)
+    		.putShort((short) 2);
+    	buffer.flip();
+    	assertEquals(1, buffer.getShort(0));
+    	assertEquals(2, buffer.getShort(2));
     }
 }
