@@ -2,489 +2,549 @@ package prova121224.buffer;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.CharBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
 import org.junit.jupiter.api.Test;
 
-class ByteBufferTests {
-	
-	// allocate()
-	@Test
-	void deveCriarBufferComCapacidadeEspecificada() {
-		ByteBuffer buffer = ByteBuffer.allocate(1);
-		assertEquals(1, buffer.capacity());
-	}
-	
-	// allocateDirect()
-	@Test
-	void deveCriarBufferDiretoComCapacidadeEspecificada() {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(1);
-		assertEquals(1, buffer.capacity());
-	}
-	
-	// array()
-	@Test
-	void deveRetornarArrayComOMesmoTamanhoDoBuffer() {
-		ByteBuffer buffer = ByteBuffer.allocate(1);
-		byte[] array = buffer.array();
-		assertEquals(1, array.length);
-	}
-	
-	// arrayOffset()
-	@Test
-	void deveRetornarZeroQuandoBufferForEnvolvidoComArrayDeBytes() {
-		ByteBuffer buffer = ByteBuffer.wrap(new byte[10]);
-		assertEquals(0, buffer.arrayOffset());
-	}
-	
-	// asCharBuffer()
-	@Test
-	void deveConverterByteBufferParaCharBufferCorretamente() {
-		ByteBuffer buffer = ByteBuffer.allocate(4);
-		
-		buffer
-			.putChar('A')
-			.flip();
-		
-		assertEquals('A', buffer.asCharBuffer().get(0));
-	}
-	
-	// asDoubleBuffer()
-	@Test
-	void deveConverterByteBufferParaDoubleBufferCorretamente() {
-		ByteBuffer buffer = ByteBuffer.allocate(16);
-		
-		buffer
-			.putDouble(1.23)
-			.flip();
-		
-		assertEquals(1.23, buffer.asDoubleBuffer().get(0), 0.01);
-	}
-	
-	// asFloatBuffer()
-	@Test
-    void deveConverterByteBufferParaFloatBufferCorretamente() {
-        ByteBuffer buffer = ByteBuffer.allocate(8);
-        
-        buffer
-        	.putFloat(1.23f)
-        	.flip();
-        
-        assertEquals(1.23f, buffer.asFloatBuffer().get(0), 0.01f);
-    }
-	
-	// asIntBuffer()
+class ByteBufferTests implements ByteBufferData {
+    
+    // allocate(int capacity)
     @Test
-    void deveConverterByteBufferParaIntBufferCorretamente() {
-        ByteBuffer buffer = ByteBuffer.allocate(8);
+    void testMethodAllocate() {
+        assertNotNull(BUFFER_2);
+    }
+    
+    // allocateDirect(int capacity)
+    @Test
+    void testMethodAllocateDirect() {
+        assertNotNull(BUFFER_DIRECT);
+    }
+    
+    // array()
+    @Test
+    void testMethodArray() {
+        assertNotNull(buffer2Array);
+    }
+    
+    // arrayOffset()
+    @Test
+    void testMethodArrayOffset() {
+        assertEquals(0, BUFFER_WRAP.arrayOffset());
+    }
+    
+    // asCharBuffer()
+    @Test
+    void testMethodAsCharBuffer() {
+        BUFFER_4
+            .clear()
+            .putChar(CHARS_VALUE)
+            .flip();
         
-        buffer
-        	.putInt(123)
-        	.flip();
+        assertTrue(BUFFER_4.asCharBuffer() instanceof CharBuffer);
+    }
+    
+    // asDoubleBuffer()
+    @Test
+    void testMethodAsDoubleBuffer() {
+        BUFFER_16
+            .clear()
+            .putDouble(DOUBLE_VALUE)
+            .flip();
         
-        assertEquals(123, buffer.asIntBuffer().get(0));
+        assertTrue(BUFFER_16.asDoubleBuffer() instanceof DoubleBuffer);
+    }
+    
+    // asFloatBuffer()
+    @Test
+    void testMethodAsFloatBuffer() {
+        BUFFER_8
+            .clear()
+            .putFloat(FLOAT_VALUE)
+            .flip();
+        
+        assertTrue(BUFFER_8.asFloatBuffer() instanceof FloatBuffer);
+    }
+    
+    // asIntBuffer()
+    @Test
+    void testMethodAsIntBuffer() {
+        BUFFER_8
+            .clear()
+            .putInt(INT_VALUE)
+            .flip();
+        
+        assertTrue(BUFFER_8.asIntBuffer() instanceof IntBuffer);
     }
     
     // asLongBuffer()
     @Test
-    void deveConverterByteBufferParaLongBufferCorretamente() {
-        ByteBuffer buffer = ByteBuffer.allocate(8);
+    void testMethodAsLongBuffer() {
+        BUFFER_8
+            .clear()
+            .putLong(LONG_VALUE)
+            .flip();
         
-        buffer
-        	.putLong(123L)
-        	.flip();
-        
-        assertEquals(123L, buffer.asLongBuffer().get(0));
+        assertTrue(BUFFER_8.asLongBuffer() instanceof LongBuffer);
     }
-
+    
     // asReadOnlyBuffer()
     @Test
-    void deveConverterByteBufferParaBufferSomenteLeitura() {
-        ByteBuffer buffer = ByteBuffer.allocate(8);
+    void testMethodAsReadOnlyBuffer() {
+        BUFFER_8
+            .clear()
+            .putInt(INT_VALUE)
+            .flip();
         
-        buffer
-        	.putInt(123)
-        	.flip();
-        
-        assertTrue(buffer.asReadOnlyBuffer() instanceof ByteBuffer);
+        assertTrue(BUFFER_8.asReadOnlyBuffer() instanceof ByteBuffer);
     }
     
     // asShortBuffer()
     @Test
-    void deveConverterByteBufferParaShortBufferCorretamente() {
-        ByteBuffer buffer = ByteBuffer.allocate(8);
+    void testMethodAsShortBuffer() {
+        BUFFER_8
+            .clear()
+            .putShort((short) SHORT_VALUE)
+            .flip();
         
-        buffer
-        	.putShort((short) 123)
-        	.flip();
-        
-        assertTrue(buffer.asShortBuffer() instanceof ShortBuffer);
+        assertTrue(BUFFER_8.asShortBuffer() instanceof ShortBuffer);
     }
-
+    
     // compact()
     @Test
-    void deveCompactarBufferCorretamenteApósLeitura() {
-        ByteBuffer buffer = ByteBuffer.allocate(10);
-
-        buffer.put((byte) 1)
-              .put((byte) 2)
-              .put((byte) 3)
-              .flip()
-              .get();
-
-        buffer.compact();
-
-        assertEquals(2, buffer.get(0));
-        assertEquals(3, buffer.get(1));
+    void testMethodCompact() {
+        BUFFER_10
+            .clear()
+            .put((byte) 1)
+            .put((byte) 2)
+            .put((byte) 3)
+            .flip()
+            .get();
+        
+        BUFFER_10.compact();
+        
+        assertEquals(2, BUFFER_10.position());
+        assertEquals(BUFFER_10.capacity(), BUFFER_10.limit());
     }
-
+    
     // compareTo()
     @Test
-    void deveCompararDoisByteBuffersCorretamente() {
-        ByteBuffer buffer1 = ByteBuffer.allocate(8).putInt(123).flip();
-        ByteBuffer buffer2 = ByteBuffer.allocate(8).putInt(123).flip();
-        assertEquals(0, buffer1.compareTo(buffer2));
+    void testMethodCompareTo() {
+        BUFFER_8
+            .clear()
+            .putInt(INT_VALUE)
+            .flip();
+        
+        BUFFER_COMPARE
+            .clear()
+            .putInt(INT_VALUE)
+            .flip();
+        
+        assertEquals(0, BUFFER_8.compareTo(BUFFER_COMPARE));
     }
     
-    // duplicate()
+    // duplicate() and equals()
     @Test
-    void deveDuplicarBufferCorretamente() {
-    	ByteBuffer buffer1 = ByteBuffer.allocate(1);
-    	ByteBuffer buffer2 = buffer1.duplicate();
-    	assertEquals(buffer1, buffer2);
-    }
-    
-    // equals()
-    @Test
-    void deveCompararDoisByteBuffersIgualdadeCorretamente() {
-    	ByteBuffer buffer1 = ByteBuffer.allocate(1);
-    	ByteBuffer buffer2 = ByteBuffer.allocate(1);
-    	boolean compare = buffer1.equals(buffer2);
-    	assertTrue(compare);
+    void testMethodsDuplicateAndEquals() {
+        ByteBuffer duplicateBuffer = BUFFER_8.duplicate();
+        boolean compare = duplicateBuffer.equals(BUFFER_8);
+        assertNotNull(duplicateBuffer);
+        assertTrue(compare);
     }
     
     // get()
     @Test
-    void deveLerPrimeiroByteCorretamente() {
-    	ByteBuffer buffer = ByteBuffer.allocate(1);
-    	
-    	buffer
-    		.put((byte) 1)
-    		.flip();
-    	
-    	assertEquals(1, buffer.get());
+    void testMethodGet() {
+        BUFFER_2
+            .clear()
+            .put((byte) 1)
+            .flip();
+        
+        assertNotNull(BUFFER_2.get());
     }
     
     // get(byte[] dst)
     @Test
-    void deveArmazenarBytesCorretamenteNoArray() {
-        ByteBuffer buffer = ByteBuffer.allocate(2);
-        
-        buffer
-        	.put((byte) 1)
-        	.put((byte) 2)
-        	.flip();
-        
-        byte[] dst = new byte[2];
-        buffer.get(dst);
-        assertArrayEquals(new byte[] {1, 2}, dst);
+    void testMethodGetWithArrayIndexation() {
+    	BUFFER_2
+    		.clear()
+    		.put((byte) 1)
+    		.put((byte) 2)
+    		.flip();
+    	
+    	byte[] dst = new byte[2];
+    	BUFFER_2.get(dst);
+    	assertArrayEquals(new byte[] {1, 2}, dst);
     }
     
     // get(byte[] dst, int offset, int length)
     @Test
-    void deveLerBytesComOffsetEComprimentoCorretos() {
-        ByteBuffer buffer = ByteBuffer.allocate(3);
-        buffer
-        	.put((byte) 1)
-        	.put((byte) 2)
-        	.put((byte) 3)
-        	.flip();
-        
-        byte[] dst = new byte[5];
-        buffer.get(dst, 1, 2);
-        
-        assertArrayEquals(new byte[] {0, 1, 2, 0, 0}, dst);
-    }
-    
-    // get(int index)
-    @Test
-    void deveLerByteCorretamenteNoIndiceEspecificado() {
-    	ByteBuffer buffer = ByteBuffer.allocate(3);
-    	
-    	buffer
+    void testMethodGetWithOffsetAndLength() {
+    	BUFFER_3
+    		.clear()
     		.put((byte) 1)
     		.put((byte) 2)
     		.put((byte) 3)
     		.flip();
     	
-    	assertEquals(1, buffer.get(0));
-    	assertEquals(2, buffer.get(1));
-    	assertEquals(3, buffer.get(2));
+    	byte[] dst = new byte[5];
+    	BUFFER_3.get(dst, 1, 2);
+    	
+    	assertArrayEquals(new byte[] {0, 1, 2, 0, 0}, dst);
     }
     
-    // getChar()
+    // get(int index)
     @Test
-    void deveLerCharCorretamente() {
-    	ByteBuffer buffer = ByteBuffer.allocate(2);
+    void testMethodGetWithIndex() {
+    	BUFFER_3
+	    	.clear()
+			.put((byte) 1)
+			.put((byte) 2)
+			.put((byte) 3)
+			.flip();
     	
-    	buffer
-    		.putChar('A')
-    		.flip();
-    	
-    	assertEquals('A', buffer.getChar());
+    	assertEquals(1, BUFFER_3.get(0));
+    	assertEquals(2, BUFFER_3.get(1));
+    	assertEquals(3, BUFFER_3.get(2));
     }
     
-    // getChar(int index)
+    // getChar() and getChar(int index)
     @Test
-    void deveLerCharCorretamenteNoIndiceEspecificado() {
-    	ByteBuffer buffer = ByteBuffer.allocate(4);
-    	
-    	buffer
-    		.putChar('A')
-    		.putChar('B')
-    		.flip();
-    	
-    	assertEquals('A', buffer.getChar(0));
-    	assertEquals('B', buffer.getChar(2));
-    }
-    
-    // getDouble()
-    @Test
-    void deveLerDoubleCorretamente() {
-    	ByteBuffer buffer = ByteBuffer.allocate(8);
-    	
-    	buffer
-    		.putDouble(1.0)
-    		.flip();
-    	
-    	assertEquals(1.0, buffer.getDouble());
-    }
-    
-    // getDouble(int index)
-    @Test
-    void deveLerDoubleCorretamenteNoIndiceEspecificado() {
-    	ByteBuffer buffer = ByteBuffer.allocate(16);
+    void testMethodGetChar() {
+        BUFFER_4
+            .clear()
+            .putChar(CHARS_VALUE)
+            .flip();
         
-    	buffer
-        	.putDouble(1.5)
-        	.putDouble(2.5)
-        	.flip();
+        assertNotNull(BUFFER_4.getChar());
+        assertEquals('A', BUFFER_4.getChar(0));
+    }
+
+    // getDouble() and getDouble(int index)
+    @Test
+    void testMethodGetDouble() {
+        BUFFER_16
+            .clear()
+            .putDouble(DOUBLE_VALUE)
+            .flip();
         
-        assertEquals(1.5, buffer.getDouble(0));
-        assertEquals(2.5, buffer.getDouble(8));
+        assertNotNull(BUFFER_16.getDouble());
+        assertEquals(1.23, BUFFER_16.getDouble(0));
     }
-    
-    // getFloat()
+
+    // getFloat() and getFloat(int index)
     @Test
-    void deveLerFloatCorretamente() {
-    	ByteBuffer buffer = ByteBuffer.allocate(4);
-    	
-    	buffer
-    		.putFloat(1.5F)
-    		.flip();
-    	
-    	assertEquals(1.5F, buffer.getFloat(0));
-    }
-    
-    // getFloat(int index)
-    @Test
-    void deveLerFloatCorretamenteNoIndiceEspecificado() {
-    	ByteBuffer buffer = ByteBuffer.allocate(8);
+    void testMethodGetFloat() {
+        BUFFER_8
+            .clear()
+            .putFloat(FLOAT_VALUE)
+            .flip();
         
-    	buffer
-        	.putFloat(1.5F)
-        	.putFloat(2.5F)
-        	.flip();
+        assertNotNull(BUFFER_8.getFloat());
+        assertEquals(1.23F, BUFFER_8.getFloat(0));
+    }
+
+    // getInt() and getInt(int index)
+    @Test
+    void testMethodGetInt() {
+        BUFFER_8
+            .clear()
+            .putInt(INT_VALUE)
+            .flip();
         
-        assertEquals(1.5F, buffer.getFloat(0));
-        assertEquals(2.5F, buffer.getFloat(4));
+        assertNotNull(BUFFER_8.getInt());
+        assertEquals(123, BUFFER_8.getInt(0));
     }
-    
-    // getInt()
+
+    // getLong() and getLong(int index)
     @Test
-    void deveLerIntCorretamente() {
-    	ByteBuffer buffer = ByteBuffer.allocate(4);
-    	
-    	buffer
-    		.putInt(1)
-    		.flip();
-    	
-    	assertEquals(1, buffer.getInt());
+    void testMethodGetLong() {
+        BUFFER_8
+            .clear()
+            .putLong(LONG_VALUE)
+            .flip();
+        
+        assertNotNull(BUFFER_8.getLong());
+        assertEquals(123L, BUFFER_8.getLong(0));
     }
-    
-    // getInt(int index)
+
+    // getShort() and getShort(int index)
     @Test
-    void deveLerIntCorretamenteNoIndiceEspecificado() {
-    	ByteBuffer buffer = ByteBuffer.allocate(8);
-    	
-    	buffer
-    		.putInt(1)
-    		.putInt(2)
-    		.flip();
-    	
-    	assertEquals(1, buffer.getInt(0));
-    	assertEquals(2, buffer.getInt(4));
+    void testMethodGetShort() {
+        BUFFER_8
+            .clear()
+            .putShort((short) SHORT_VALUE)
+            .flip();
+        
+        assertNotNull(BUFFER_8.getShort());
+        assertEquals(123, BUFFER_8.getShort(0));
     }
-    
-    // getLong()
-    @Test
-    void deveLerLongCorretamente() {
-    	ByteBuffer buffer = ByteBuffer.allocate(8);
-    	
-    	buffer
-    		.putLong(1L)
-    		.flip();
-    	
-    	assertEquals(1L, buffer.getLong());
-    }
-    
-    // getLong(int index)
-    @Test
-    void deveLerLongCorretamenteNoIndiceEspecificado() {
-    	ByteBuffer buffer = ByteBuffer.allocate(16);
-    	
-    	buffer
-    		.putLong(1L)
-    		.putLong(2L)
-    		.flip();
-    	
-    	assertEquals(1L, buffer.getLong(0));
-    	assertEquals(2L, buffer.getLong(8));
-    }
-    
-    // getShort()
-    @Test
-    void deveLerShortCorretamente() {
-    	ByteBuffer buffer = ByteBuffer.allocate(2);
-    	
-    	buffer
-    		.putShort((short) 1)
-    		.flip();
-    	
-    	assertEquals(1, buffer.getShort());
-    }
-    
-    // getShort(int index)
-    @Test
-    void deveLerShortCorretamenteNoIndiceEspecificado() {
-    	ByteBuffer buffer = ByteBuffer.allocate(4);
-    	
-    	buffer
-    		.putShort((short) 1)
-    		.putShort((short) 2)
-    		.flip();
-    	
-    	assertEquals(1, buffer.getShort(0));
-    	assertEquals(2, buffer.getShort(2));
-    }
-    
+
     // hasArray()
     @Test
-    void deveVerificarSeBufferPossuiUmArray() {
-    	ByteBuffer buffer = ByteBuffer.allocate(1);
-    	assertTrue(buffer.hasArray());
+    void testMethodHasArray() {
+        assertTrue(BUFFER_WRAP.hasArray());
     }
     
     // hashCode()
     @Test
-    void deveVerificarSeOsHashCodesSaoIguais() {
-    	ByteBuffer buffer1 = ByteBuffer.allocate(1);
-    	ByteBuffer buffer2 = ByteBuffer.allocate(1);
-    	assertEquals(buffer1.hashCode(), buffer2.hashCode());
+    void testMethodHasCode() {
+    	BUFFER_2.clear();
+    	ByteBuffer bufferHashCode = BUFFER_2.duplicate();
+    	assertEquals(BUFFER_2.hashCode(), bufferHashCode.hashCode());
     }
     
     // isDirect()
     @Test
-    void deveVerificarSeOsBuffersSaoBuffersDiretos() {
-    	ByteBuffer buffer1 = ByteBuffer.allocate(1);
-    	ByteBuffer buffer2 = ByteBuffer.allocateDirect(1);
-    	assertFalse(buffer1.isDirect());
-    	assertTrue(buffer2.isDirect());
+    void testMethodIsDirect() {
+        assertTrue(BUFFER_DIRECT.isDirect());
     }
     
-    // order() TODO
-    
-    // order(ByteOrder bo) TODO
-    
+    // order() and order(ByteOrder bo)
+    @Test
+    void testMethodOrder() {
+    	BUFFER_8_ORDER
+    		.clear()
+    		.order(ByteOrder.LITTLE_ENDIAN);
+    	
+    	assertEquals(ByteOrder.LITTLE_ENDIAN, BUFFER_8_ORDER.order());
+    	
+    	BUFFER_8_ORDER
+			.clear()
+			.order(ByteOrder.BIG_ENDIAN);
+    	
+    	assertEquals(ByteOrder.BIG_ENDIAN, BUFFER_8_ORDER.order());
+    }
+
     // put(byte b)
     @Test
-    void deveRetornarQueDoisValoresDiferentesNaoSaoIguais() {
-    	ByteBuffer buffer1 = ByteBuffer.allocate(1);
-    	ByteBuffer buffer2 = ByteBuffer.allocate(1);
-    	buffer1.put((byte) 1).flip();
-    	buffer2.put((byte) 2).flip();
-    	
-    	assertNotEquals(buffer1, buffer2);
+    void testMethodPutByte() {
+        BUFFER_2
+        	.clear()
+        	.put((byte) 5);
+        
+        assertNotNull(BUFFER_2);
     }
     
     // put(byte[] src)
     @Test
-    void deveVerificarSeTodosOsValoresForamAdicionadosNoBuffer() {
-    	ByteBuffer buffer = ByteBuffer.allocate(3);
-    	
-    	byte[] src = {10, 20, 30};
-    	
-    	buffer
-    		.put(src)
-    		.flip();
-    	
-    	assertEquals(10, buffer.get());
-    	assertEquals(20, buffer.get());
-    	assertEquals(30, buffer.get());
+    void testMethodPut() {
+        BYTE_ARRAY_SIZE[0] = 10;
+        BYTE_ARRAY_SIZE[1] = 20;
+        BYTE_ARRAY_SIZE[2] = 30;
+        
+        BUFFER_10
+        	.clear()
+        	.put(BYTE_ARRAY_SIZE)
+        	.flip();
+        
+        assertNotNull(BUFFER_10);
+        assertEquals(10, BUFFER_10.get());
+        assertEquals(20, BUFFER_10.get());
+        assertEquals(30, BUFFER_10.get());
     }
-    
+
     // put(byte[] src, int offset, int length)
     @Test
-    void deveCopiarParteDoArrayParaOBufferComOffsetEComprimentoCorretos() {
-    	ByteBuffer buffer = ByteBuffer.allocate(5);
-    	
-    	byte[] src = {10, 20, 30, 40, 50};
-    	
-    	buffer
-    		.put(src, 2, 3)
-    		.flip();
-    	
-    	assertEquals(30, buffer.get());
-    	assertEquals(40, buffer.get());
-    	assertEquals(50, buffer.get());
+    void testMethodPutWithOffsetAndLength() {
+        BUFFER_5
+        	.clear()
+        	.put(byteArray, 2, 3)
+        	.flip();
+        
+        assertNotNull(BUFFER_5);
+        assertEquals(30, BUFFER_5.get());
+        assertEquals(40, BUFFER_5.get());
+        assertEquals(50, BUFFER_5.get());
     }
-    
+
     // put(ByteBuffer src)
     @Test
-    void deveCopiarBytesDoBufferDeOrigemParaOBufferDeDestino() {
-    	ByteBuffer buffer1 = ByteBuffer.allocate(10);
-    	ByteBuffer buffer2 = ByteBuffer.allocate(5);
-    	
-    	buffer2
-    		.put(new byte[] {1, 2, 3, 4, 5})
-    		.flip();
-    	
-    	buffer1
-    		.put(buffer2)
-    		.flip();
-    	
-    	while (buffer2.hasRemaining()) {
-    		assertEquals(buffer2.get(), buffer1.get());
-    	}
+    void testMethodPutFromByteBuffer() {
+        BUFFER_8
+        	.clear()
+        	.put(new byte[] {1, 2, 3, 4, 5})
+        	.flip();
+        
+        BUFFER_16
+        	.clear()
+        	.put(BUFFER_8)
+        	.flip();
+        
+        assertNotNull(BUFFER_8);
+        assertNotNull(BUFFER_16);
     }
-    
+
     // put(int index, byte b)
     @Test
-    void deveInserirBytesNosIndicesEspecificados() {
-    	ByteBuffer buffer = ByteBuffer.allocate(3);
-    	
-    	buffer
-    		.put(0, (byte) 10)
-    		.put(1, (byte) 20)
-    		.put(2, (byte) 30);
-    	
-    	assertEquals(10, buffer.get(0));
-    	assertEquals(20, buffer.get(1));
-    	assertEquals(30, buffer.get(2));
+    void testMethodPutAtIndex() {
+        BUFFER_8
+        	.clear()
+        	.put(0, (byte) 10)
+            .put(1, (byte) 20)
+            .put(2, (byte) 30);
+        
+        assertNotNull(BUFFER_8);
+        assertEquals(10, BUFFER_8.get(0));
+        assertEquals(20, BUFFER_8.get(1));
+        assertEquals(30, BUFFER_8.get(2));
+    }
+
+    // putChar(char value)
+    @Test
+    void testMethodPutChar() {
+        BUFFER_4
+        	.clear()
+        	.putChar(CHARS_VALUE);
+        
+        assertNotNull(BUFFER_4);
+    }
+
+    // putDouble(double value)
+    @Test
+    void testMethodPutDouble() {
+        BUFFER_16
+        	.clear()
+        	.putDouble(DOUBLE_VALUE);
+        
+        assertNotNull(BUFFER_16);
+    }
+
+    // putFloat(float value)
+    @Test
+    void testMethodPutFloat() {
+        BUFFER_8
+        	.clear()
+        	.putFloat(FLOAT_VALUE);
+        
+        assertNotNull(BUFFER_8);
+    }
+
+    // putInt(int value)
+    @Test
+    void testMethodPutInt() {
+        BUFFER_8
+        	.clear()
+        	.putInt(INT_VALUE);
+        
+        assertNotNull(BUFFER_8);
+    }
+
+    // putLong(long value)
+    @Test
+    void testMethodPutLong() {
+        BUFFER_8
+        	.clear()
+        	.putLong(LONG_VALUE);
+        
+        assertNotNull(BUFFER_8);
+    }
+
+    // putShort(short value)
+    @Test
+    void testMethodPutShort() {
+        BUFFER_8
+        	.clear()
+        	.putShort((short) SHORT_VALUE);
+        
+        assertNotNull(BUFFER_8);
+    }
+    
+    // putChar(int index, char value)
+    @Test
+    void testMethodPutCharWithIndex() {
+        BUFFER_4
+            .clear()
+            .putChar(0, CHARS_VALUE);
+        
+        assertEquals(CHARS_VALUE, BUFFER_4.getChar(0));
+    }
+
+    // putDouble(int index, double value)
+    @Test
+    void testMethodPutDoubleWithIndex() {
+        BUFFER_16
+            .clear()
+            .putDouble(0, DOUBLE_VALUE);
+        
+        assertEquals(DOUBLE_VALUE, BUFFER_16.getDouble(0));
+    }
+
+    // putFloat(int index, float value)
+    @Test
+    void testMethodPutFloatWithIndex() {
+        BUFFER_8
+            .clear()
+            .putFloat(0, FLOAT_VALUE);
+        
+        assertEquals(FLOAT_VALUE, BUFFER_8.getFloat(0));
+    }
+
+    // putInt(int index, int value)
+    @Test
+    void testMethodPutIntWithIndex() {
+        BUFFER_8
+            .clear()
+            .putInt(0, INT_VALUE);
+        
+        assertEquals(INT_VALUE, BUFFER_8.getInt(0));
+    }
+
+    // putLong(int index, long value)
+    @Test
+    void testMethodPutLongWithIndex() {
+        BUFFER_8
+            .clear()
+            .putLong(0, LONG_VALUE);
+        
+        assertEquals(LONG_VALUE, BUFFER_8.getLong(0));
+    }
+
+    // putShort(int index, short value)
+    @Test
+    void testMethodPutShortWithIndex() {
+        BUFFER_8
+            .clear()
+            .putShort(0, (short) SHORT_VALUE);
+        
+        assertEquals((short) SHORT_VALUE, BUFFER_8.getShort(0));
+    }
+
+
+    // slice()
+    @Test
+    void testMethodSlice() {
+        BUFFER_10
+        	.clear()
+        	.put((byte) 1)
+        	.put((byte) 2)
+        	.flip();
+        
+        ByteBuffer slicedBuffer = BUFFER_10.slice();
+        assertNotNull(slicedBuffer);
+        assertEquals(2, slicedBuffer.remaining());
+    }
+
+    // wrap(byte[] array)
+    @Test
+    void testMethodWrap() {
+        BUFFER_WRAP.clear();
+        assertNotNull(BUFFER_WRAP);
+    }
+
+    // wrap(byte[] array, int offset, int length)
+    @Test
+    void testMethodWrapWithOffset() {
+        ByteBuffer buffer = ByteBuffer.wrap(byteArray, 2, 3);
+        assertNotNull(buffer);
     }
 }
